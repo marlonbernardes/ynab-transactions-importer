@@ -1,4 +1,4 @@
-# YNAB File Importer
+# YNAB Transactions Importer
 
 Command line utility for importing YNAB transactions from text files. 
 
