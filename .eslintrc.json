@@ -1,0 +1,12 @@
+{
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "strict": "error",
+    "prefer-const": "error",
+    "no-param-reassign": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-misused-new": "off"
+  }
+}
