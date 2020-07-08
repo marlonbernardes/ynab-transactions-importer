@@ -16,7 +16,7 @@ into a YNAB Transaction and use YNAB's API to import this data.
 3. Invoke the CLI
 
 ```sh
-Usage: ynab-file-importer [options]
+Usage: ynab-transactions-importer [options]
 
 Options:
   --help      Show help                                                [boolean]
@@ -44,7 +44,7 @@ Options:
 
 ```sh
 YNAB_API_TOKEN=<personal API token> \
-  ynab-file-importer \
+  ynab-transactions-importer \
     --input '~/transactions.txt' \
     --budget <budget_id> \
     --parser '~/my-parser.js' \
@@ -54,7 +54,7 @@ YNAB_API_TOKEN=<personal API token> \
 
 ```sh
 YNAB_API_TOKEN=<personal API token> \
-  ynab-file-importer \
+  ynab-transactions-importer \
     --input '~/transactions.txt' \
     --budget <budget_id> \
     --parser '~/my-parser.js' \
