@@ -48,4 +48,5 @@ const start = async () => {
 
 start().catch(err => {
   logger.error(err)
+  process.exit(1);
 });
