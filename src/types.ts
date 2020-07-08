@@ -1,24 +1,32 @@
-export interface TransactionParser {
-  parse(params: ParserParams, line: string): YnabTransaction | null
-} 
-
-export type ParserParams = any;
+export type TransactionParser = (line: string) => YnabTransaction | null
 
 export type CliOptions = {
   input: string
   parser: string
   budget: string
-  parserParams: ParserParams
+  defaults: Partial<YnabTransaction>
   skip: number
 }
-  
-// @TODO define according to YNAB spec
+
 export type YnabTransaction = {
-  date: string
+  date?: string
+  amount?: number
+  payee_id?: string
+  payee_name?: string
+  account_id?: string
+  category_id?: string
+  memo?: string
+  cleared?: string
+  approved?: boolean
+  flag_color?: string
+  import_id?: string
+  subtransactions?: YnabSubTransaction[]
+}
+
+export type YnabSubTransaction = {
   amount: number
+  payee_id: string
   payee_name: string
-  account_id: string
-  cleared: 'cleared' | 'uncleared'
-  approved: boolean
-  flag_color: string
+  category_id: string
+  memo: string
 }
