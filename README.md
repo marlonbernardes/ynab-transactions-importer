@@ -16,51 +16,72 @@ into a YNAB Transaction and use YNAB's API to import this data.
 3. Invoke the CLI
 
 ```sh
-YNAB_API_TOKEN=<personal API token> \
-  ynab-file-importer import \
-    --input '~/transactions.txt' \
-    --budget <budget_id> \
-    --parser '~/my-parser.js' \
-    --parser-params '{ "account_id": "<ynab account id>" }'
+Usage: ynab-file-importer [options]
+
+Options:
+  --help      Show help                                                [boolean]
+  --version   Show version number                                      [boolean]
+  --input     File containing list of transactions which will be created.
+              Must end with a line break and have one transaction per line.
+              Each line of this file will be supplied as an input to the parser
+              function.                                      [string] [required]
+  --parser                                                   [string] [required]
+  --budget    Budget ID. Can be found in YNABs URL after logging in.
+              e.g https://app.youneedabudget.com/<budget_id> [string] [required]
+  --defaults  JSON containing additional params which will be added to each one
+              of the transactions.
+              Check the definiton "#/definitions/SaveTransaction" at
+              https://api.youneedabudget.com/v1#/Transactions/createTransaction
+              for a list of all accepted fields.             [string] [required]
+  --skip      Optional number of lines which will be skipped when parsing the
+              input file.                                               [number]
+
 ```
+
+### Examples
+
+**Importing all transactions in a file**
 
 ```sh
 YNAB_API_TOKEN=<personal API token> \
-  ynab-file-importer import \
+  ynab-file-importer \
     --input '~/transactions.txt' \
     --budget <budget_id> \
     --parser '~/my-parser.js' \
-    --parser-params '{ "account_id": "<ynab account id>" }' \
+    --defaults '{ "account_id": "<ynab account id>" }'
+```
+**Skipping already imported lines**
+
+```sh
+YNAB_API_TOKEN=<personal API token> \
+  ynab-file-importer \
+    --input '~/transactions.txt' \
+    --budget <budget_id> \
+    --parser '~/my-parser.js' \
+    --defaults '{ "account_id": "<ynab account id>", "flag_color": "green" }' \
     --skip $(cat output.txt 2>/dev/null || echo "0") \
   && wc -l < transactions.txt > output.txt
 ```
 
+**Example parser**
 
+```js
+const EXPENSE_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});Your payment of €(?<amount>.*) to (?<payee_name>.+) has been successfully processed./
+const INCOME_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});You received a .* for €(?<amount>.*) from (?<payee_name>.+)\./;
 
-```sh
-Usage: ynab-file-importer <command> [options]
+export default function parse (line) {
+  if (EXPENSE_REGEXP.test(line)) {
+    const { date, amount, payee_name } = EXPENSE_REGEXP.exec(line).groups;
+    return { date, amount: Number(amount) * 1000, payee_name };
+  }
 
-Commands:
-  import  Import transactions into YNAB from a corresponding
-                   transaction file.
-
-Options:
-  --help          Show help                                            [boolean]
-  --version       Show version number                                  [boolean]
-  --input         File containing list of transactions which will be created.
-                  Must end with a line break and have one transaction per line.
-                  Each line of this file will be supplied as an input to the
-                  parser function.                           [string] [required]
-  --parser                                                   [string] [required]
-  --budget        Budget ID. Can be found in YNABs URL after logging in.
-                  e.g https://app.youneedabudget.com/<budget_id>
-                                                             [string] [required]
-  --parserParams  JSON containing additional params which will be supplied to
-                  the parser                                 [string] [required]
-  --skip          Optional number of lines which will be skipped when parsing
-                  the input file.                                       [number]
+  if (INCOME_REGEXP.test(line)) {
+    const { date, amount, payee_name } = INCOME_REGEXP.exec(line)!.groups;
+    return { date, amount: Number(amount) * 1000, payee_name };
+  }
+  return null;
+}
 ```
-
 
 ### Motivation
 
