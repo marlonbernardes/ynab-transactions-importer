@@ -20,5 +20,5 @@ export const request = (url: string, method: string, data: unknown) =>
     return data;
   }));
 
-export const saveTransactions = (budgetId: string, transactions: YnabTransaction[]) =>
+export const saveTransactions = (budgetId: string, transactions: Partial<YnabTransaction>[]) =>
   request(`/v1/budgets/${budgetId}/transactions`, 'POST', { transactions });

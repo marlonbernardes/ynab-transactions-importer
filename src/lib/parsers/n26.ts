@@ -1,44 +1,24 @@
-import { TransactionParser, YnabTransaction } from '../../types';
+import { YnabTransaction } from '../../types';
 
-const EXPENSE_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});Your payment of €(?<amount>.*) to (?<payee>.+) has been successfully processed./
-const INCOME_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});You received a .* for €(?<amount>.*) from (?<payee>.+)\./;
+const EXPENSE_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});Your payment of €(?<amount>.*) to (?<payee_name>.+) has been successfully processed./
+const INCOME_REGEXP = /(?<date>\d{4}-\d{2}-\d{2});You received a .* for €(?<amount>.*) from (?<payee_name>.+)\./;
 
 type TransactionRegexp = {
   date: string
   amount: string
-  payee: string
+  payee_name: string
+  test: string
 };
 
-type Params = {
-  budget_id: string
-  account_id: string
-}
-
-class N26NotificationParser implements TransactionParser {
-  parse(params: Params, line: string) { 
-    if (EXPENSE_REGEXP.test(line)) {
-      const { date, amount, payee } = EXPENSE_REGEXP.exec(line)!.groups as TransactionRegexp;
-      return this.toTransaction(params, { date, amount: -Number(amount) * 1000, payee })
-    }
-  
-    if (INCOME_REGEXP.test(line)) {
-      const { date, amount, payee } = INCOME_REGEXP.exec(line)!.groups as TransactionRegexp;
-      return this.toTransaction(params, { date, amount: Number(amount) * 1000, payee })
-    }
-    return null;
+export default function parse (line: string): YnabTransaction | null {
+  if (EXPENSE_REGEXP.test(line)) {
+    const { date, amount, payee_name } = EXPENSE_REGEXP.exec(line)!.groups as TransactionRegexp;
+    return { date, amount: Number(amount) * 1000, payee_name };
   }
 
-  toTransaction(params: Params, {date, payee, amount}: { date: string, payee: string, amount: number }): YnabTransaction {
-    return {
-      date,
-      amount,
-      payee_name: payee,
-      account_id: params.account_id,
-      cleared: 'cleared',
-      approved: true,
-      flag_color: 'orange'
-    }
+  if (INCOME_REGEXP.test(line)) {
+    const { date, amount, payee_name } = INCOME_REGEXP.exec(line)!.groups as TransactionRegexp;
+    return { date, amount: Number(amount) * 1000, payee_name };
   }
+  return null;
 }
-
-export default new N26NotificationParser();
