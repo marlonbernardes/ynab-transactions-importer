@@ -1,11 +1,12 @@
 {
   "name": "ynab-transactions-importer",
   "description": "YNAB transactions file importer",
-  "version": "0.0.1-rc3",
+  "version": "0.0.1-rc4",
   "author": "Marlon Bernardes",
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
   "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
     "build": "tsc -p tsconfig.build.json",
     "start": "ts-node --files ./src/index.ts",
     "test": "jest",
