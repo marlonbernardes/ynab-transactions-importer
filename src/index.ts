@@ -6,9 +6,8 @@ import { CliOptions } from './types';
 import { logger } from './lib/utils/logger';
 
 const parseCliArguments = (): CliOptions => {
-  const { input, parser, budget, parserParams, skip } = yargs
-    .usage('Usage: $0 <command> [options]')
-    .command('import', 'Import transactions into YNAB from a corresponding transaction file.')
+  const { input, parser, budget, defaults, skip } = yargs
+    .usage('Usage: $0 [options]')
     .options({
       input: { 
         type: 'string', 
@@ -24,21 +23,22 @@ const parseCliArguments = (): CliOptions => {
         description: `Budget ID. Can be found in YNABs URL after logging in.
           e.g https://app.youneedabudget.com/<budget_id>`
       },  
-      parserParams: {
+      defaults: {
         type: 'string',
-        description: 'JSON containing additional params which will be supplied to the parser'
+        description: `JSON containing additional params which will be added to each one of the transactions. 
+          Check the definiton "#/definitions/SaveTransaction" at https://api.youneedabudget.com/v1#/Transactions/createTransaction
+          for a list of all accepted fields.`
       },  
       skip: { 
         type: 'number',
         description: 'Optional number of lines which will be skipped when parsing the input file.'
       },  
     }) 
-    .demandOption(['input', 'parser', 'budget', 'parserParams'])
-    .demandCommand()
+    .demandOption(['input', 'parser', 'budget', 'defaults'])
     .strict()
     .argv;
     
-    return { input, parser, budget, parserParams: parserParams ? JSON.parse(parserParams) : {}, skip: skip || 0 };
+    return { input, parser, budget, defaults: defaults ? JSON.parse(defaults) : {}, skip: skip || 0 };
   };
 
 const start = async () => {

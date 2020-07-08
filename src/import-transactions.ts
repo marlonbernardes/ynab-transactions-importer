@@ -7,7 +7,10 @@ export async function run(options: CliOptions) {
   const parser = (await import(options.parser)).default as TransactionParser;
   const unprocessed = readFileLines(options.input, { skip: options.skip });
   const isNotNull = <T>(value: T): value is NonNullable<T> => !!value;
-  const transactions = unprocessed.map(line => parser.parse(options.parserParams, line)).filter(isNotNull);
+  const transactions = unprocessed
+    .map(line => parser(line))
+    .filter(isNotNull)
+    .map(transaction => (Object.assign({}, options.defaults, transaction )))
 
   if (transactions.length > 0) {
     logger.info(transactions);
