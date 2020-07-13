@@ -1,7 +1,7 @@
 {
   "name": "ynab-transactions-importer",
   "description": "YNAB transactions file importer",
-  "version": "0.0.1-rc4",
+  "version": "0.1.0",
   "author": "Marlon Bernardes",
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
