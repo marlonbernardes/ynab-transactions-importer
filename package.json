@@ -5,6 +5,9 @@
   "author": "Marlon Bernardes",
   "main": "./dist/index.js",
   "bin": "./dist/index.js",
+  "engines": {
+    "node": ">= 12"
+  },
   "scripts": {
     "prepare": "tsc -p tsconfig.build.json",
     "build": "tsc -p tsconfig.build.json",
